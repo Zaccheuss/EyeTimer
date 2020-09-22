@@ -6,6 +6,17 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 29
 
+    // ** https://stackoverflow.com/questions/48988778/cannot-inline-bytecode-built-with-jvm-target-1-8-into-bytecode-that-is-being-bui
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+    // ** ^^ see SO link
+
     defaultConfig {
         applicationId "com.zaccheus.eyetimer"
         minSdkVersion 21
