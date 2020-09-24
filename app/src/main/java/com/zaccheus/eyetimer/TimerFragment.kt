@@ -12,14 +12,13 @@ import com.zaccheus.eyetimer.databinding.FragmentTimerBinding
 
 class TimerFragment : Fragment() {
 
-    private lateinit var binding: FragmentTimerBinding
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_timer, container, false)
+        val binding: FragmentTimerBinding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_timer, container, false)
 
         val vm: TimerViewModel by viewModels()
         binding.vm = vm

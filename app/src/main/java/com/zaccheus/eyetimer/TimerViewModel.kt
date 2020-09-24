@@ -10,11 +10,12 @@ class TimerViewModel : ViewModel() {
 
     private lateinit var timer: CountDownTimer
 
-    val timeLeft = MutableLiveData<Long>(10000)
+    val timeLeft = MutableLiveData<Long>(4000)
     val timerLength = MutableLiveData<Long>(10000)
     val timerState = MutableLiveData<TimerState>(STOPPED)
 
     fun startTimer() {
+        Timber.v("timer started")
         timer = object: CountDownTimer(timeLeft.value!!, 50) {
             override fun onTick(millisUntilFinished: Long) {
                 timerState.value = RUNNING
@@ -22,10 +23,13 @@ class TimerViewModel : ViewModel() {
                 timeLeft.value = millisUntilFinished
             }
             override fun onFinish() {
+                // Make sure the time is actually zero, sometimes the onTick() method doesn't
+                // set the time all the way to zero.
+                timeLeft.value = 0
                 timerState.value = STOPPED
                 Timber.v("timer finished")
             }
-        }
+        }.start()
     }
 
 }
