@@ -14,11 +14,24 @@ class TimerViewModel : ViewModel() {
     val timerLength = MutableLiveData<Long>(10000)
     val timerState = MutableLiveData<TimerState>(STOPPED)
 
+    fun onTimerClick() {
+        if (timerState.value!! == STOPPED) {
+            Timber.d("timer clicked in the STOPPED state")
+            startTimer()
+            timerState.value = RUNNING
+        } else if(timerState.value!! == RUNNING) {
+            Timber.d("timer clicked in the RUNNING state")
+            timerState.equals(RUNNING)
+            stopTimer()
+        } else {
+            Timber.e("Timer state is neither RUNNING or STOPPED, might be FINISHED")
+        }
+    }
+
     fun startTimer() {
-        Timber.v("timer started")
+        Timber.d("timer started")
         timer = object: CountDownTimer(timeLeft.value!!, 50) {
             override fun onTick(millisUntilFinished: Long) {
-                timerState.value = RUNNING
                 Timber.v("onTick: $millisUntilFinished")
                 timeLeft.value = millisUntilFinished
             }
@@ -26,10 +39,20 @@ class TimerViewModel : ViewModel() {
                 // Make sure the time is actually zero, sometimes the onTick() method doesn't
                 // set the time all the way to zero.
                 timeLeft.value = 0
-                timerState.value = STOPPED
+                timerState.value = FINISHED
                 Timber.v("timer finished")
             }
         }.start()
+    }
+
+    fun stopTimer() {
+        timer.cancel()
+        timerState.value = STOPPED
+    }
+
+    fun resetTimer() {
+        timeLeft.value = timerLength.value;
+        timerState.value = STOPPED
     }
 
 }

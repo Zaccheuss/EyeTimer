@@ -25,3 +25,8 @@ fun setProgress(view: ProgressBar, progress: Long) {
 fun setMax(view: ProgressBar, max: Long) {
     view.max = max.toInt()
 }
+
+//@BindingAdapter("android:visibility")
+//fun setVisibility(view: TextView, visible: Boolean) {
+//    view.visibility = if ()
+//}

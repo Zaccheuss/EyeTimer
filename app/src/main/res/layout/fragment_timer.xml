@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="com.zaccheus.eyetimer.TimerState"/>
+        <import type="android.view.View"/>
+
         <variable
             name="vm"
             type="com.zaccheus.eyetimer.TimerViewModel" />
@@ -37,13 +40,25 @@
             android:minWidth="400dp"
             android:minHeight="400dp"
             android:progress="@{vm.timeLeft}"
-            android:onClick="@{() -> vm.startTimer()}"
+            android:onClick="@{() -> vm.onTimerClick()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:max="80000"
             tools:progress="60501" />
+
+        <Button
+            android:id="@+id/button_reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RESET"
+            android:visibility="@{vm.timerState == TimerState.FINISHED ? View.VISIBLE : View.GONE}"
+            android:onClick="@{() -> vm.resetTimer()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/timer_progress" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
