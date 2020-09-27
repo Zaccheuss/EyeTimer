@@ -18,4 +18,9 @@
         android:max="59"
         app:showSeekBarValue="true"/>
 
+    <com.zaccheus.eyetimer.preference.TimePreference
+        android:key="test3"
+        app:title="does it work?"
+        android:summary="Timer" />
+
 </PreferenceScreen>
