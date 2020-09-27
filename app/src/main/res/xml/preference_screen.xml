@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SeekBarPreference
+        app:key="@string/pref_timer_length_mins_key"
+        app:title="@string/pref_timer_length_mins_title"
+        app:iconSpaceReserved="false"
+        android:defaultValue="0"
+        android:max="59"
+        app:showSeekBarValue="true"/>
+
+    <SeekBarPreference
+        app:key="@string/pref_timer_length_secs_key"
+        app:title="@string/pref_timer_length_secs_title"
+        app:iconSpaceReserved="false"
+        android:defaultValue="10"
+        android:max="59"
+        app:showSeekBarValue="true"/>
+
+</PreferenceScreen>
