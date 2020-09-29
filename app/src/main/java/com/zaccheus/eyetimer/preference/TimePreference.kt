@@ -3,25 +3,28 @@ package com.zaccheus.eyetimer.preference
 import android.content.Context
 import android.util.AttributeSet
 import androidx.preference.DialogPreference
+import com.zaccheus.eyetimer.preference.TimePreference.Constants.DEFAULT_TIME
+import com.zaccheus.eyetimer.util.TimeConverter
 
 class TimePreference(context: Context?, attrs: AttributeSet?) : DialogPreference(context, attrs) {
 
-    fun getPersistedMinutesFromMidnight(): Int {
-        return super.getPersistedInt(DEFAULT_MINUTES_FROM_MIDNIGHT)
+    object Constants {
+        const val DEFAULT_TIME: Long = 10000 // 10 seconds
     }
 
-    fun persistMinutesFromMidnight(minutesFromMidnight: Int) {
-        super.persistInt(minutesFromMidnight)
+    fun getPersistedTimeDuration(): Long {
+        return super.getPersistedLong(DEFAULT_TIME)
+    }
+
+    fun persistMinutesFromMidnight(timeDuration: Long) {
+        super.persistLong(timeDuration)
         notifyChanged()
     }
 
     override fun onSetInitialValue(restorePersistedValue: Boolean, defaultValue: Any?) {
         super.onSetInitialValue(restorePersistedValue, defaultValue)
-        summary = getPersistedMinutesFromMidnight().toString()
+        val time = getPersistedTimeDuration()
+        summary = TimeConverter.convertMillisToString(time)
     }
 
-    companion object {
-        private const val DEFAULT_HOUR = 9
-        const val DEFAULT_MINUTES_FROM_MIDNIGHT = DEFAULT_HOUR * 60
-    }
 }

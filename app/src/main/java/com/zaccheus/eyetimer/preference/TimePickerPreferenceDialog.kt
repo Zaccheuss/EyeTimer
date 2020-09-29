@@ -4,35 +4,33 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.TimePicker
 import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceDialogFragmentCompat
+import com.zaccheus.eyetimer.util.TimeConverter
+import mobi.upod.timedurationpicker.*
 
 class TimePickerPreferenceDialog : PreferenceDialogFragmentCompat() {
 
-    lateinit var timepicker: TimePicker
+    lateinit var timepicker: TimeDurationPicker
 
     override fun onCreateDialogView(context: Context?): View {
-        timepicker = TimePicker(context)
+        timepicker = TimeDurationPicker(context)
         return timepicker
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindDialogView(view: View?) {
         super.onBindDialogView(view)
-
-        val minutesAfterMidnight = (preference as TimePreference).getPersistedMinutesFromMidnight()
-        timepicker.setIs24HourView(true)
-        timepicker.hour = minutesAfterMidnight / 60
-        timepicker.minute = minutesAfterMidnight % 60
+        val timeDuration = (preference as TimePreference).getPersistedTimeDuration()
+        timepicker.duration = timeDuration
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onDialogClosed(positiveResult: Boolean) {
         if (positiveResult) {
-            val minutesAfterMidnight = (timepicker.hour * 60) + timepicker.minute
-            (preference as TimePreference).persistMinutesFromMidnight(minutesAfterMidnight)
-            preference.summary = minutesAfterMidnight.toString()
+            val timeDuration: Long = timepicker.duration
+            (preference as TimePreference).persistMinutesFromMidnight(timeDuration)
+            preference.summary = TimeConverter.convertMillisToString(timeDuration)
         }
     }
 
