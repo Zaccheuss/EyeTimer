@@ -67,4 +67,7 @@ dependencies {
 
     // MaterialProgressBar
     implementation 'me.zhanghai.android.materialprogressbar:library:1.6.1'
+
+    // Timepicker
+    implementation 'mobi.upod:time-duration-picker:1.1.3'
 }

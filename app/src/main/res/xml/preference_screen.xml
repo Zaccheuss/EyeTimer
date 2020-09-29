@@ -1,26 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SeekBarPreference
-        app:key="@string/pref_timer_length_mins_key"
-        app:title="@string/pref_timer_length_mins_title"
-        app:iconSpaceReserved="false"
-        android:defaultValue="0"
-        android:max="59"
-        app:showSeekBarValue="true"/>
-
-    <SeekBarPreference
-        app:key="@string/pref_timer_length_secs_key"
-        app:title="@string/pref_timer_length_secs_title"
-        app:iconSpaceReserved="false"
-        android:defaultValue="10"
-        android:max="59"
-        app:showSeekBarValue="true"/>
-
     <com.zaccheus.eyetimer.preference.TimePreference
-        android:key="testTimepicker"
-        app:title="Timepicker"
-        android:defaultValue="90" />
+        android:key="@string/pref_timer_duration_key"
+        app:title="@string/pref_timer_duration_title"
+        android:icon="@drawable/ic_baseline_access_time_24" />
 
 </PreferenceScreen>
