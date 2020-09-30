@@ -17,4 +17,9 @@ class MainActivity : AppCompatActivity() {
         NavigationUI.setupActionBarWithNavController(
             this, Navigation.findNavController(this, R.id.nav_host_fragment))
     }
+
+    // Used to navigate with the up button from settings screen back to the main screen
+    override fun onSupportNavigateUp(): Boolean {
+        return Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp()
+    }
 }
