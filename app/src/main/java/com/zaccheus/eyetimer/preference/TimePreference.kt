@@ -15,7 +15,7 @@ class TimePreference(context: Context?, attrs: AttributeSet?) : DialogPreference
     fun getPersistedTimeDuration(): Long {
         return super.getPersistedLong(DEFAULT_TIME)
     }
-
+    
     fun persistTimeDuration(timeDuration: Long) {
         super.persistLong(timeDuration)
         notifyChanged()
