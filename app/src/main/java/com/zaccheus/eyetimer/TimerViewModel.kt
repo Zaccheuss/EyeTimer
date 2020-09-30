@@ -6,8 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 import com.zaccheus.eyetimer.TimerState.*
+import com.zaccheus.eyetimer.TimerViewModel.Constants.COUNT_DOWN_INTERVAL
 import com.zaccheus.eyetimer.TimerViewModel.Constants.DEFAULT_TIMER_LENGTH
-import com.zaccheus.eyetimer.TimerViewModel.Constants.DEFAULT_TIME_LEFT
 import timber.log.Timber
 
 class TimerViewModel(app: Application) : AndroidViewModel(app) {
@@ -15,38 +15,48 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
 
     object Constants {
         // Used for testing purposes to make sure circular timer is working
-        const val DEFAULT_TIME_LEFT: Long = 4000
         const val DEFAULT_TIMER_LENGTH: Long = 10000
+        const val COUNT_DOWN_INTERVAL: Long = 50 //millis
     }
 
     private lateinit var timer: CountDownTimer
     private var app: Application
 
-    val timeLeft = MutableLiveData<Long>(DEFAULT_TIME_LEFT)
-    val timerLength = MutableLiveData<Long>(DEFAULT_TIMER_LENGTH)
+    val timeLeft = MutableLiveData<Long>()
+    val timerLength = MutableLiveData<Long>()
     val timerState = MutableLiveData<TimerState>(STOPPED)
 
     init {
         Timber.d("TimerViewModel created")
         this.app = app
+        // Since nothing is being persisted when app is closed (for now) just get the value from
+        // preferences.
+        timeLeft.value = getTimeFromPrefs();
+        timerLength.value = getTimeFromPrefs()
     }
 
     fun checkPrefs() {
+        // Check if the current timer length is different from the timer length stored in
+        // preferences. If so, the timer length in preferences has been changed and the timer
+        // should be reset
+        if (getTimeFromPrefs() != timerLength.value) {
+            Timber.d("Timer length has been changed in preferences")
+            timerLength.value = getTimeFromPrefs()
+            // Don't try to access the timer if it hasn't been initialized yet. Happens when
+            // TimerFragment is first created.
+            if (this::timer.isInitialized) {
+                stopTimer()
+                resetTimer()
+            }
+        }
+    }
+
+    private fun getTimeFromPrefs(): Long {
         val prefs = PreferenceManager
             .getDefaultSharedPreferences(app.applicationContext)
         val timerLengthPrefs = prefs.getLong(app.getString(R.string.pref_timer_duration_key),
             DEFAULT_TIMER_LENGTH)
-        Timber.d("Time preference in viewmodel: $timerLengthPrefs")
-
-        // Check if the current timer length is different from the timer length stored in
-        // preferences. If so, the timer length in preferences has been changed and the timer
-        // should be reset
-        if (timerLengthPrefs != timerLength.value) {
-            Timber.d("Timer length has been changed in preferences")
-            timerLength.value = timerLengthPrefs
-            timeLeft.value = timerLengthPrefs
-        }
-
+        return timerLengthPrefs
     }
 
     fun onTimerClick() {
@@ -65,7 +75,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
 
     fun startTimer() {
         Timber.d("timer started")
-        timer = object: CountDownTimer(timeLeft.value!!, 50) {
+        timer = object: CountDownTimer(timeLeft.value!!, COUNT_DOWN_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
                 Timber.v("onTick: $millisUntilFinished")
                 timeLeft.value = millisUntilFinished
