@@ -12,6 +12,8 @@ import com.zaccheus.eyetimer.databinding.FragmentTimerBinding
 
 class TimerFragment : Fragment() {
 
+    private val vm: TimerViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -21,11 +23,17 @@ class TimerFragment : Fragment() {
             inflater, R.layout.fragment_timer, container, false)
         setHasOptionsMenu(true)
 
-        val vm: TimerViewModel by viewModels()
         binding.vm = vm
         binding.lifecycleOwner = this
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Have the viewmodel check if any preferences have been changed every time this fragment
+        // is reloaded
+        vm.checkPrefs()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
