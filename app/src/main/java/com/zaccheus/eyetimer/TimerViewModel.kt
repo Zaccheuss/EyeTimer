@@ -1,10 +1,15 @@
 package com.zaccheus.eyetimer
 
 import android.app.Application
+import android.app.PendingIntent
+import android.content.Intent
 import android.os.CountDownTimer
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
+import com.zaccheus.eyetimer.MainApplication.Companion.CHANNEL_ID
 import com.zaccheus.eyetimer.TimerState.*
 import com.zaccheus.eyetimer.TimerViewModel.Constants.COUNT_DOWN_INTERVAL
 import com.zaccheus.eyetimer.TimerViewModel.Constants.DEFAULT_TIMER_LENGTH
@@ -85,6 +90,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
                 // set the time all the way to zero.
                 timeLeft.value = 0
                 timerState.value = FINISHED
+                showNotification()
                 Timber.v("timer finished")
             }
         }.start()
@@ -98,6 +104,25 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     fun resetTimer() {
         timeLeft.value = timerLength.value;
         timerState.value = STOPPED
+    }
+
+    private fun showNotification() {
+        val notificationManager = NotificationManagerCompat.from(app)
+        val notificationBuilder = NotificationCompat.Builder(app, CHANNEL_ID)
+            .setContentTitle("Timer has finished")
+            .setContentText("Tap this notification to open EyeTimer")
+            .setSmallIcon(R.drawable.ic_clock_white)
+            .setContentIntent(setupTapIntentToOpenApp())
+            .setAutoCancel(true)
+        notificationManager.notify(1, notificationBuilder.build())
+        Timber.v("notification sent")
+    }
+
+    private fun setupTapIntentToOpenApp(): PendingIntent {
+        val myIntent = Intent(app, MainActivity::class.java)
+        val pendingIntent =
+            PendingIntent.getActivity(app, 1, myIntent, 0)
+        return pendingIntent
     }
 
 }
