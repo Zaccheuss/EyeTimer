@@ -70,6 +70,17 @@
             app:layout_constraintTop_toTopOf="parent"
             android:visibility="@{vm.timerState == TimerState.STOPPED ? View.VISIBLE : View.GONE}"/>
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/test_image_view"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:src="@drawable/ic_play_black"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

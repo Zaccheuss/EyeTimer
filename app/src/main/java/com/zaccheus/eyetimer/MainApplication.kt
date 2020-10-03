@@ -19,7 +19,7 @@ class MainApplication : Application() {
         super.onCreate()
         Timber.plant(CustomDebugTree())
         Timber.v("Application started and Timber tree planted")
-        setupNotificationChannel();
+        setupNotificationChannel()
     }
 
     private fun setupNotificationChannel() {

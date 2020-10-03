@@ -1,7 +1,12 @@
 package com.zaccheus.eyetimer
 
+import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.view.*
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -14,19 +19,33 @@ class TimerFragment : Fragment() {
 
     private val vm: TimerViewModel by activityViewModels()
 
+    private lateinit var binding: FragmentTimerBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentTimerBinding = DataBindingUtil.inflate(
+        binding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_timer, container, false)
         setHasOptionsMenu(true)
 
         binding.vm = vm
         binding.lifecycleOwner = this
 
+        vm.timerState.observe(viewLifecycleOwner, {
+            if (vm.timerState.value == TimerState.RUNNING) {
+                onTimerStartedAnimation()
+            }
+        })
+
         return binding.root
+    }
+
+    private fun onTimerStartedAnimation() {
+        val animFadeOut = AnimationUtils.loadAnimation(context, R.anim.fade_out)
+        binding.testImageView.visibility = View.VISIBLE
+        binding.testImageView.startAnimation(animFadeOut)
     }
 
     override fun onResume() {
