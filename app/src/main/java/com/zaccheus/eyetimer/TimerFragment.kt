@@ -8,6 +8,7 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -73,5 +74,13 @@ class TimerFragment : Fragment() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+
+        // We don't want any notifications running when the app is closed so cancel them here
+        val notificationManager = NotificationManagerCompat.from(requireContext())
+        notificationManager.cancelAll()
     }
 }
