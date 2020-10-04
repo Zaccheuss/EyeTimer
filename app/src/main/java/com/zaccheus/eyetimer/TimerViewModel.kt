@@ -16,6 +16,7 @@ import com.zaccheus.eyetimer.MainApplication.Companion.LOW_PRIORITY_CHANNEL_ID
 import com.zaccheus.eyetimer.TimerState.*
 import com.zaccheus.eyetimer.TimerViewModel.Constants.COUNT_DOWN_INTERVAL
 import com.zaccheus.eyetimer.TimerViewModel.Constants.DEFAULT_TIMER_LENGTH
+import com.zaccheus.eyetimer.TimerViewModel.Constants.FF_RW_INTERVAL
 import com.zaccheus.eyetimer.util.TimeConverter
 import timber.log.Timber
 
@@ -26,6 +27,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
         // Used for testing purposes to make sure circular timer is working
         const val DEFAULT_TIMER_LENGTH: Long = 10000
         const val COUNT_DOWN_INTERVAL: Long = 50 //millis
+        const val FF_RW_INTERVAL: Long = 5000 //millis
     }
 
     private lateinit var timer: CountDownTimer
@@ -84,23 +86,42 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun fastForward() {
-        if (timerState.value == RUNNING) {
-            Timber.d("Fast forward button clicked while timer is running")
-            stopTimer()
-            timeLeft.value = timeLeft.value!! - 5000
-            startTimer()
+        if (timeLeft.value!! > 50) { // Check if we are already finished (or very close to finish)
+            if (timerState.value == RUNNING) { // Need to stop the timer to fast forward
+                Timber.d("Fast forward button clicked while timer is running")
+                stopTimer()
+                if (timeLeft.value!! - FF_RW_INTERVAL < 0) {
+                    Timber.d("Fast forward past the end of the timer, setting to 0")
+                    timeLeft.value = 1 // setting to 1 lets the timer finish and call timer.onFinish()
+                } else {
+                    timeLeft.value = timeLeft.value!! - FF_RW_INTERVAL
+                }
+                startTimer()
+            } else {
+                if (timeLeft.value!! - FF_RW_INTERVAL < 0) {
+                    Timber.d("Fast forward past the end of the timer, setting to 0")
+                    timeLeft.value = 0
+                    //Initialize the timer here in case somebody FF to the end of the of the timer
+                    // the first time the app is opened. I probably want to initialize the timer in
+                    // the init block but this works for now
+                    startTimer()
+                    timer.onFinish()
+                } else {
+                    timeLeft.value = timeLeft.value!! - FF_RW_INTERVAL
+                }
+            }
         } else {
-            timeLeft.value = timeLeft.value!! - 5000
+            Timber.d("can't fast forward, timer is finished")
         }
     }
     fun fastRewind() {
         if (timerState.value == RUNNING) {
             Timber.d("Fast rewind button clicked while timer is running")
             stopTimer()
-            timeLeft.value = timeLeft.value!! + 5000
+            timeLeft.value = timeLeft.value!! + FF_RW_INTERVAL
             startTimer()
         } else {
-            timeLeft.value = timeLeft.value!! + 5000
+            timeLeft.value = timeLeft.value!! + FF_RW_INTERVAL
         }
     }
 
