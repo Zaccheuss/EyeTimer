@@ -43,7 +43,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
         prefs = PreferenceManager.getDefaultSharedPreferences(app)
         // Since nothing is being persisted when app is closed (for now) just get the value from
         // preferences.
-        timeLeft.value = getTimeFromPrefs();
+        timeLeft.value = getTimeFromPrefs()
         timerLength.value = getTimeFromPrefs()
     }
 
@@ -83,11 +83,31 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
         return notifTogglePref
     }
 
+    fun fastForward() {
+        if (timerState.value == RUNNING) {
+            Timber.d("Fast forward button clicked while timer is running")
+            stopTimer()
+            timeLeft.value = timeLeft.value!! - 5000
+            startTimer()
+        } else {
+            timeLeft.value = timeLeft.value!! - 5000
+        }
+    }
+    fun fastRewind() {
+        if (timerState.value == RUNNING) {
+            Timber.d("Fast rewind button clicked while timer is running")
+            stopTimer()
+            timeLeft.value = timeLeft.value!! + 5000
+            startTimer()
+        } else {
+            timeLeft.value = timeLeft.value!! + 5000
+        }
+    }
+
     fun onTimerClick() {
         if (timerState.value!! == STOPPED) {
             Timber.d("timer clicked in the STOPPED state")
             startTimer()
-            timerState.value = RUNNING
         } else if(timerState.value!! == RUNNING) {
             Timber.d("timer clicked in the RUNNING state")
             timerState.equals(RUNNING)
@@ -97,8 +117,8 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun startTimer() {
-        Timber.d("timer started")
+    private fun startTimer() {
+        Timber.d("timer created with ${timeLeft.value} millis")
         timer = object: CountDownTimer(timeLeft.value!!, COUNT_DOWN_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
                 Timber.v("onTick: $millisUntilFinished")
@@ -119,9 +139,11 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
                 Timber.v("timer finished")
             }
         }.start()
+        Timber.d("timer started")
+        timerState.value = RUNNING
     }
 
-    fun stopTimer() {
+    private fun stopTimer() {
         timer.cancel()
         timerState.value = STOPPED
     }
