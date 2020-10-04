@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.CountDownTimer
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -28,7 +29,9 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private lateinit var timer: CountDownTimer
-    private var app: Application
+
+    private val prefs: SharedPreferences
+    private val app: Application
 
     val timeLeft = MutableLiveData<Long>()
     val timerLength = MutableLiveData<Long>()
@@ -37,6 +40,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     init {
         Timber.d("TimerViewModel created")
         this.app = app
+        prefs = PreferenceManager.getDefaultSharedPreferences(app)
         // Since nothing is being persisted when app is closed (for now) just get the value from
         // preferences.
         timeLeft.value = getTimeFromPrefs();
@@ -57,14 +61,26 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
                 resetTimer()
             }
         }
+        // Check if the user turned off ongoing notifications. Cancel all notifications if so.
+        if (!getOngoingNotifToggleFromPrefs()) {
+            cancelAllNotifications()
+        } else {
+            showNotification(buildPersistentNotification())
+        }
     }
 
     private fun getTimeFromPrefs(): Long {
-        val prefs = PreferenceManager
-            .getDefaultSharedPreferences(app.applicationContext)
-        val timerLengthPrefs = prefs.getLong(app.getString(R.string.pref_timer_duration_key),
+        val timerLengthPref
+                = prefs.getLong(app.getString(R.string.pref_timer_duration_key),
             DEFAULT_TIMER_LENGTH)
-        return timerLengthPrefs
+        return timerLengthPref
+    }
+
+    private fun getOngoingNotifToggleFromPrefs(): Boolean {
+        val notifTogglePref
+                = prefs.getBoolean(app.getString(R.string.pref_ongoing_notification_toggle_key),
+            true)
+        return notifTogglePref
     }
 
     fun onTimerClick() {
@@ -87,7 +103,9 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
             override fun onTick(millisUntilFinished: Long) {
                 Timber.v("onTick: $millisUntilFinished")
                 timeLeft.value = millisUntilFinished
-                showNotification(buildPersistentNotification())
+                if (getOngoingNotifToggleFromPrefs()) {
+                    showNotification(buildPersistentNotification())
+                }
             }
             override fun onFinish() {
                 // Make sure the time is actually zero, sometimes the onTick() method doesn't
@@ -137,7 +155,6 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     private fun showNotification(notification: Notification) {
         val notificationManager = NotificationManagerCompat.from(app)
         notificationManager.notify(1, notification)
-        Timber.v("notification on timer end sent")
     }
 
     private fun cancelAllNotifications() {

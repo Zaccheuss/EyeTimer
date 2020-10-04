@@ -7,11 +7,14 @@
     <com.zaccheus.eyetimer.preference.TimePreference
         android:key="@string/pref_timer_duration_key"
         app:title="@string/pref_timer_duration_title"
-        android:icon="@drawable/ic_clock_black" />
+        android:icon="@drawable/ic_clock_black"
+        android:defaultValue="00:00:10"
+        android:summary="00:00:10"/>
 
     <SwitchPreferenceCompat
         android:key="@string/pref_ongoing_notification_toggle_key"
         app:title="@string/pref_ongoing_notification_toggle_title"
-        android:icon="@drawable/ic_notification_black" />
+        android:icon="@drawable/ic_notification_black"
+        android:defaultValue="true" />
 
 </PreferenceScreen>
