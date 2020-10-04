@@ -33,7 +33,7 @@ class TimerFragment : Fragment() {
 
         binding.vm = vm
         binding.lifecycleOwner = this
-
+        // When timer is clicked while stopped show a short animation when it starts again
         vm.timerState.observe(viewLifecycleOwner, {
             if (vm.timerState.value == TimerState.RUNNING) {
                 onTimerStartedAnimation()
@@ -78,7 +78,6 @@ class TimerFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-
         // We don't want any notifications running when the app is closed so cancel them here
         val notificationManager = NotificationManagerCompat.from(requireContext())
         notificationManager.cancelAll()
