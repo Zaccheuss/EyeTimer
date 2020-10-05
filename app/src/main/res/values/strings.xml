@@ -7,7 +7,8 @@
 
     <string name="pref_ongoing_notification_toggle_key">com.zaccheus.prefs.ongoing_notif_toggle</string>
     <string name="pref_ongoing_notification_toggle_title">Ongoing Notification</string>
-    <string name="pref_ongoing_notification_toggle_on_summary">notifications are enabled</string>
-    <string name="pref_ongoing_notification_toggle_off_summary">notifications are disabled</string>
+
+    <string name="pref_FF_RW_visibility_key">com.zaccheus.prefs.FF_RW_visibility</string>
+    <string name="pref_FF_RW_visibility_title">FF and RW Button Visibility</string>
 
 </resources>

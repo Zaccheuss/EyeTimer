@@ -15,6 +15,14 @@
         android:key="@string/pref_ongoing_notification_toggle_key"
         app:title="@string/pref_ongoing_notification_toggle_title"
         android:icon="@drawable/ic_notification_black"
-        android:defaultValue="true" />
+        android:defaultValue="true"
+        android:summary="Lorem ipsum dolor sit amet, consectetur adipiscing elit"/>
+
+    <SwitchPreferenceCompat
+        android:key="@string/pref_FF_RW_visibility_key"
+        app:title="@string/pref_FF_RW_visibility_title"
+        android:icon="@drawable/ic_fast_forward_black"
+        android:defaultValue="true"
+        android:summary="Lorem ipsum dolor sit amet, consectetur adipiscing elit"/>
 
 </PreferenceScreen>

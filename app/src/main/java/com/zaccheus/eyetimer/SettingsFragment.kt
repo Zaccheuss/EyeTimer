@@ -7,7 +7,6 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import com.zaccheus.eyetimer.preference.TimePickerPreferenceDialog
-import com.zaccheus.eyetimer.preference.TimePreference
 import timber.log.Timber
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -16,6 +15,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var TIMER_DURATION_KEY: String
     private lateinit var ONGOING_NOTIF_TOGGLE_KEY: String
+    private lateinit var FF_RW_VIS_KEY: String
     private lateinit var preferenceListener: SharedPreferences.OnSharedPreferenceChangeListener
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -24,8 +24,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // Set values here so we have access to application context
         TIMER_DURATION_KEY = resources.getString(R.string.pref_timer_duration_key)
         ONGOING_NOTIF_TOGGLE_KEY = resources.getString(R.string.pref_ongoing_notification_toggle_key)
+        FF_RW_VIS_KEY = resources.getString(R.string.pref_FF_RW_visibility_key)
 
-        setPreferenceSummaries()
+        setPreferenceSummaries() //Set summaries when SettingsFragment is opened
         preferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
             setPreferenceSummaries()
         }
@@ -35,12 +36,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun setPreferenceSummaries() {
-        val switchPref =
+        val ongoingNotifToggleSwitch =
             this.findPreference<SwitchPreferenceCompat>(ONGOING_NOTIF_TOGGLE_KEY)!!
-        if (switchPref.isChecked) {
-            switchPref.summary = "Show a notification while the timer is running"
+        if (ongoingNotifToggleSwitch.isChecked) {
+            ongoingNotifToggleSwitch.summary = "Show a notification while the timer is running"
         } else {
-            switchPref.summary = "Don't show anything while the timer is running"
+            ongoingNotifToggleSwitch.summary = "Don't show anything while the timer is running"
+        }
+
+        val ffRwVisibility =
+            this.findPreference<SwitchPreferenceCompat>(FF_RW_VIS_KEY)!!
+        if (ffRwVisibility.isChecked) {
+            ffRwVisibility.summary = "Show buttons that fast forward or rewind the timer"
+        } else {
+            ffRwVisibility.summary = "Hide buttons that fast forward or rewind the timer"
         }
     }
 

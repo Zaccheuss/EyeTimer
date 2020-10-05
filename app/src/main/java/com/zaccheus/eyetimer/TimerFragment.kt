@@ -1,5 +1,6 @@
 package com.zaccheus.eyetimer
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.view.*
@@ -14,7 +15,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import com.zaccheus.eyetimer.databinding.FragmentTimerBinding
+import timber.log.Timber
 
 class TimerFragment : Fragment() {
 
@@ -51,9 +54,23 @@ class TimerFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Have the viewmodel check if any preferences have been changed every time this fragment
+        //Have the viewmodel check if any preferences have been changed every time this fragment
         // is reloaded
         vm.checkPrefs()
+        //Check if FF and RW buttons are enabled
+        handleFFRWButtons()
+    }
+
+    private fun handleFFRWButtons() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+
+        if (prefs.getBoolean(resources.getString(R.string.pref_FF_RW_visibility_key), false)) {
+            binding.buttonForward.show()
+            binding.buttonRewind.show()
+        } else {
+            binding.buttonForward.hide()
+            binding.buttonRewind.hide()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -64,7 +81,6 @@ class TimerFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.settings -> {
-                Toast.makeText(context, "Settings", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(TimerFragmentDirections.actionTimerToSettings())
                 return true
             }
@@ -76,9 +92,13 @@ class TimerFragment : Fragment() {
         }
     }
 
+    //TODO: Put this in a service and call onTaskRemoved() to tell when the app has been closed from
+    // the the task pane
+    // https://stackoverflow.com/questions/48346933/notification-still-appear-when-app-is-closed
+    // https://stackoverflow.com/questions/19568315/how-to-handle-code-when-app-is-killed-by-swiping-in-android/26882533#26882533
     override fun onDetach() {
         super.onDetach()
-        // We don't want any notifications running when the app is closed so cancel them here
+        //We don't want any notifications running when the app is closed so cancel them here
         val notificationManager = NotificationManagerCompat.from(requireContext())
         notificationManager.cancelAll()
     }
