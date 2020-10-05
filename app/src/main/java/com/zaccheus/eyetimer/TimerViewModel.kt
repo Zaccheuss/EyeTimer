@@ -119,9 +119,21 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
             Timber.d("Fast rewind button clicked while timer is running")
             stopTimer()
             timeLeft.value = timeLeft.value!! + FF_RW_INTERVAL
+            //Check if timer will rewind past the initial timer length
+            if (timeLeft.value!! + FF_RW_INTERVAL > timerLength.value!!) {
+                Timber.d("Rewind past the beginning of the timer, setting to timer length")
+                timeLeft.value = timerLength.value
+            } else {
+                timeLeft.value = timeLeft.value!! + FF_RW_INTERVAL
+            }
             startTimer()
         } else {
-            timeLeft.value = timeLeft.value!! + FF_RW_INTERVAL
+            if (timeLeft.value!! + FF_RW_INTERVAL > timerLength.value!!) {
+                Timber.d("Rewind past the beginning of the timer, setting to timer length")
+                timeLeft.value = timerLength.value
+            } else {
+                timeLeft.value = timeLeft.value!! + FF_RW_INTERVAL
+            }
         }
     }
 
