@@ -1,23 +1,15 @@
 package com.zaccheus.eyetimer
 
 import android.app.Application
-import android.app.Notification
-import android.app.PendingIntent
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.CountDownTimer
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
-import com.zaccheus.eyetimer.MainApplication.Companion.HIGH_PRIORITY_CHANNEL_ID
-import com.zaccheus.eyetimer.MainApplication.Companion.LOW_PRIORITY_CHANNEL_ID
 import com.zaccheus.eyetimer.TimerState.*
 import com.zaccheus.eyetimer.TimerViewModel.Constants.COUNT_DOWN_INTERVAL
 import com.zaccheus.eyetimer.TimerViewModel.Constants.DEFAULT_TIMER_LENGTH
 import com.zaccheus.eyetimer.TimerViewModel.Constants.FF_RW_INTERVAL
-import com.zaccheus.eyetimer.util.convertMillisToString
 import timber.log.Timber
 
 class TimerViewModel(app: Application) : AndroidViewModel(app) {
@@ -32,6 +24,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
 
     private lateinit var timer: CountDownTimer
 
+    private val notificationManager: TimerNotificationManager
     private val prefs: SharedPreferences
     private val app: Application
 
@@ -42,6 +35,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     init {
         Timber.d("TimerViewModel created")
         this.app = app
+        notificationManager = TimerNotificationManager(app)
         prefs = PreferenceManager.getDefaultSharedPreferences(app)
         // Since nothing is being persisted when app is closed (for now) just get the value from
         // preferences.
@@ -65,9 +59,9 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
         }
         // Check if the user turned off ongoing notifications. Cancel all notifications if so.
         if (!getOngoingNotifToggleFromPrefs()) {
-            cancelAllNotifications()
+            notificationManager.cancelAllNotifications()
         } else {
-            showNotification(buildPersistentNotification())
+            notificationManager.persistentNotification(timeLeft.value!!)
         }
     }
 
@@ -157,7 +151,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
                 Timber.v("onTick: $millisUntilFinished")
                 timeLeft.value = millisUntilFinished
                 if (getOngoingNotifToggleFromPrefs()) {
-                    showNotification(buildPersistentNotification())
+                    notificationManager.persistentNotification(timeLeft.value!!)
                 }
             }
             override fun onFinish() {
@@ -167,8 +161,8 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
                 timerState.value = FINISHED
                 // Not cancelling the ongoing notification sometimes causes timer end notification
                 // to not appear
-                cancelAllNotifications()
-                showNotification(buildTimerEndNotification())
+                notificationManager.cancelAllNotifications()
+                notificationManager.timerEndNotification()
                 Timber.v("timer finished")
             }
         }.start()
@@ -184,44 +178,6 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     fun resetTimer() {
         timeLeft.value = timerLength.value;
         timerState.value = STOPPED
-    }
-
-    private fun buildTimerEndNotification() : Notification {
-        val notificationBuilder = NotificationCompat.Builder(app, HIGH_PRIORITY_CHANNEL_ID)
-            .setContentTitle("Timer has finished")
-            .setContentText("Tap this notification to open EyeTimer")
-            .setSmallIcon(R.drawable.ic_clock_white)
-            .setContentIntent(setupTapIntentToOpenApp())
-            .setAutoCancel(true)
-        return notificationBuilder.build()
-    }
-
-    private fun buildPersistentNotification() : Notification {
-        val notificationBuilder = NotificationCompat.Builder(app, LOW_PRIORITY_CHANNEL_ID)
-            .setContentTitle("Time Left")
-            .setContentText(convertMillisToString(timeLeft.value!!))
-            .setSmallIcon(R.drawable.ic_clock_white)
-            .setContentIntent(setupTapIntentToOpenApp())
-            .setOnlyAlertOnce(true)
-            .setOngoing(true)
-        return notificationBuilder.build()
-    }
-
-    private fun showNotification(notification: Notification) {
-        val notificationManager = NotificationManagerCompat.from(app)
-        notificationManager.notify(1, notification)
-    }
-
-    private fun cancelAllNotifications() {
-        val notificationManager = NotificationManagerCompat.from(app)
-        notificationManager.cancelAll()
-    }
-
-    private fun setupTapIntentToOpenApp(): PendingIntent {
-        val myIntent = Intent(app, MainActivity::class.java)
-        val pendingIntent =
-            PendingIntent.getActivity(app, 1, myIntent, 0)
-        return pendingIntent
     }
 
 }
