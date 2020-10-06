@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceDialogFragmentCompat
-import com.zaccheus.eyetimer.util.TimeConverter
+import com.zaccheus.eyetimer.util.convertMillisToString
 import mobi.upod.timedurationpicker.*
 
 class TimePickerPreferenceDialog : PreferenceDialogFragmentCompat() {
@@ -30,7 +30,7 @@ class TimePickerPreferenceDialog : PreferenceDialogFragmentCompat() {
         if (positiveResult) {
             val timeDuration: Long = timepicker.duration
             (preference as TimePreference).persistTimeDuration(timeDuration)
-            preference.summary = TimeConverter.convertMillisToString(timeDuration)
+            preference.summary = convertMillisToString(timeDuration)
         }
     }
 

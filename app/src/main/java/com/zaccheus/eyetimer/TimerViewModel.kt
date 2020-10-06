@@ -17,7 +17,7 @@ import com.zaccheus.eyetimer.TimerState.*
 import com.zaccheus.eyetimer.TimerViewModel.Constants.COUNT_DOWN_INTERVAL
 import com.zaccheus.eyetimer.TimerViewModel.Constants.DEFAULT_TIMER_LENGTH
 import com.zaccheus.eyetimer.TimerViewModel.Constants.FF_RW_INTERVAL
-import com.zaccheus.eyetimer.util.TimeConverter
+import com.zaccheus.eyetimer.util.convertMillisToString
 import timber.log.Timber
 
 class TimerViewModel(app: Application) : AndroidViewModel(app) {
@@ -199,7 +199,7 @@ class TimerViewModel(app: Application) : AndroidViewModel(app) {
     private fun buildPersistentNotification() : Notification {
         val notificationBuilder = NotificationCompat.Builder(app, LOW_PRIORITY_CHANNEL_ID)
             .setContentTitle("Time Left")
-            .setContentText(TimeConverter.convertMillisToString(timeLeft.value!!))
+            .setContentText(convertMillisToString(timeLeft.value!!))
             .setSmallIcon(R.drawable.ic_clock_white)
             .setContentIntent(setupTapIntentToOpenApp())
             .setOnlyAlertOnce(true)

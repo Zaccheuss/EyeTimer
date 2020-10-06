@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.preference.DialogPreference
 import com.zaccheus.eyetimer.preference.TimePreference.Constants.DEFAULT_TIME
-import com.zaccheus.eyetimer.util.TimeConverter
+import com.zaccheus.eyetimer.util.convertMillisToString
 
 class TimePreference(context: Context?, attrs: AttributeSet?) : DialogPreference(context, attrs) {
 
@@ -24,7 +24,7 @@ class TimePreference(context: Context?, attrs: AttributeSet?) : DialogPreference
     override fun onSetInitialValue(restorePersistedValue: Boolean, defaultValue: Any?) {
         super.onSetInitialValue(restorePersistedValue, defaultValue)
         val time = getPersistedTimeDuration()
-        summary = TimeConverter.convertMillisToString(time)
+        summary = convertMillisToString(time)
     }
 
 }
